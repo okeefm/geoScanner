@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <TextView android:text="Barcode text:" android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+    <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:text="Barcode" android:id="@+id/barcodeEditText"></EditText>
+    <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:onClick="onScanBarcodeClick" android:text="@string/scanButtonName" android:id="@+id/button1"></Button>
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView3" android:text="@string/locationTextViewName"></TextView>
+    <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:text="Location" android:id="@+id/locationEditText"></EditText>
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="@string/dateTextView" android:id="@+id/textView4"></TextView>
+    <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:text="@string/dateEditText" android:clickable="true" android:id="@+id/dateEditText" android:onClick="onSetDate" android:editable="false"></EditText>
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="@string/timeTextView" android:id="@+id/textView5"></TextView>
+    <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:text="@string/timeEditText" android:editable="false" android:clickable="true" android:onClick="onSetTime" android:id="@+id/timeEditText"></EditText>
+    <TextView android:text="Label:" android:id="@+id/textView2" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+    <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:text="Label" android:id="@+id/labelEditText"></EditText>
+	<Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/button2" android:text="@string/saveButton"></Button>
+</LinearLayout>

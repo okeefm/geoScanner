@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, GeoScanner!</string>
+    <string name="app_name">GeoScanner</string>
+    <string name="scanButtonName">Scan Barcode</string>
+    <string name="saveButton">Save</string>
+    <string name="locationTextViewName">Current Location:</string>
+    <string name="barcodeScanFail">The barcode scan did not return a valid barcode</string>
+    <string name="dateEditText">Date</string>
+    <string name="dateTextView">Date:</string>
+    <string name="timeTextView">Time:</string>
+    <string name="timeEditText">Time</string>
+    <string name="setDateButtonText">Set Date</string>
+    <string name="setTimeButton">Set Time</string>
+</resources>
