@@ -11,7 +11,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -21,6 +23,8 @@ import android.widget.Toast;
 public class GeoScanner extends Activity {
     /** Called when the activity is first created. */
 	private EditText text;
+	private EditText dateText;
+	private EditText timeText;
 	private Integer index;
 	private Location currentLocation;
 	private Boolean usingLastKnownLocation;
@@ -32,6 +36,8 @@ public class GeoScanner extends Activity {
 	private int mDay;
 	private int mHour;
 	private int mMinute;
+	
+	private static final String TAG = "geoScanner";
 	
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 	private static final long GPS_UPDATE_TIME = 1000 * 60;
@@ -98,6 +104,31 @@ public class GeoScanner extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         index = 0;
+        dateText = (EditText) findViewById(R.id.dateEditText);
+        timeText = (EditText) findViewById(R.id.timeEditText);
+        
+        dateText.setOnClickListener(new View.OnClickListener() {
+        	public void onClick(View v) {
+        		setCurrentDate();
+        		showDialog(DATE_DIALOG_ID);
+        		updateDateDisplay();
+        	}
+        });
+        
+        timeText.setOnClickListener(new View.OnClickListener() {
+        	public void onClick(View v) {
+        		setCurrentTime();
+        		showDialog(TIME_DIALOG_ID);
+        		updateTimeDisplay();
+        	}
+        });
+        
+        setCurrentDate();
+        updateDateDisplay();
+        
+        setCurrentTime();
+        updateTimeDisplay();
+        
         lm = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
         	public void onLocationChanged(Location location) {
@@ -143,7 +174,7 @@ public class GeoScanner extends Activity {
         case TIME_DIALOG_ID:
         	return new TimePickerDialog(this,
         				mTimeSetListener,
-        				mHour, mMinute, false);
+        				mHour, mMinute, true);
         }
         return null;
     }
@@ -168,7 +199,7 @@ public class GeoScanner extends Activity {
     				//Month is 0-based so add 1
     				.append(mMonth + 1).append("-")
     				.append(mDay).append("-")
-    				.append(mYear).append("-"));
+    				.append(mYear));
     }
     
     private void updateTimeDisplay() {
@@ -209,18 +240,6 @@ public class GeoScanner extends Activity {
                 updateTimeDisplay();
             }
         };
-            
-    public void onSetDate() {
-    	setCurrentDate();
-    	showDialog(DATE_DIALOG_ID);
-    	updateDateDisplay();
-    }
-    
-    public void onSetTime() {
-    	setCurrentTime();
-    	showDialog(TIME_DIALOG_ID);
-    	updateTimeDisplay();
-    }
     
     /** updates the current location, based on if the new location is better */
     public void updateCurrentLocation(Location location) {
