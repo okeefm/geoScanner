@@ -133,6 +133,95 @@ public class GeoScanner extends Activity {
     	currentLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
     
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+        case DATE_DIALOG_ID:
+            return new DatePickerDialog(this,
+                        mDateSetListener,
+                        mYear, mMonth, mDay);
+        case TIME_DIALOG_ID:
+        	return new TimePickerDialog(this,
+        				mTimeSetListener,
+        				mHour, mMinute, false);
+        }
+        return null;
+    }
+    
+    public void setCurrentDate() {
+    	final Calendar c = Calendar.getInstance();
+    	mYear = c.get(Calendar.YEAR);
+    	mMonth = c.get(Calendar.MONTH);
+    	mDay = c.get(Calendar.DAY_OF_MONTH);
+    }
+    
+    public void setCurrentTime() {
+    	final Calendar c = Calendar.getInstance();
+        mHour = c.get(Calendar.HOUR_OF_DAY);
+        mMinute = c.get(Calendar.MINUTE);
+    }
+    
+    public void updateDateDisplay() {
+    	EditText editText = (EditText) findViewById(R.id.dateEditText);
+    	editText.setText(
+    			new StringBuilder()
+    				//Month is 0-based so add 1
+    				.append(mMonth + 1).append("-")
+    				.append(mDay).append("-")
+    				.append(mYear).append("-"));
+    }
+    
+    private void updateTimeDisplay() {
+        EditText editText = (EditText) findViewById(R.id.timeEditText);
+        editText.setText(
+            new StringBuilder()
+                    .append(pad(mHour)).append(":")
+                    .append(pad(mMinute)));
+    }
+
+    private static String pad(int c) {
+        if (c >= 10)
+            return String.valueOf(c);
+        else
+            return "0" + String.valueOf(c);
+    }
+    
+    // the callback received when the user "sets" the date in the dialog
+    private DatePickerDialog.OnDateSetListener mDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+
+                public void onDateSet(DatePicker view, int year, 
+                                      int monthOfYear, int dayOfMonth) {
+                    mYear = year;
+                    mMonth = monthOfYear;
+                    mDay = dayOfMonth;
+                    updateDateDisplay();
+                }
+            };
+            
+ // the callback received when the user "sets" the time in the dialog
+    private TimePickerDialog.OnTimeSetListener mTimeSetListener =
+        new TimePickerDialog.OnTimeSetListener() {
+    	
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                mHour = hourOfDay;
+                mMinute = minute;
+                updateTimeDisplay();
+            }
+        };
+            
+    public void onSetDate() {
+    	setCurrentDate();
+    	showDialog(DATE_DIALOG_ID);
+    	updateDateDisplay();
+    }
+    
+    public void onSetTime() {
+    	setCurrentTime();
+    	showDialog(TIME_DIALOG_ID);
+    	updateTimeDisplay();
+    }
+    
     /** updates the current location, based on if the new location is better */
     public void updateCurrentLocation(Location location) {
     	if (isBetterLocation(location, currentLocation)) {
