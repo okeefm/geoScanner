@@ -12,4 +12,6 @@
     <string name="timeEditText">Time</string>
     <string name="setDateButtonText">Set Date</string>
     <string name="setTimeButton">Set Time</string>
+    <string name="cancelButtonText">Cancel</string>
+    <string name="newBarcodeButton">Add a new barcode</string>
 </resources>
