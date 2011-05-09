@@ -16,7 +16,7 @@
     <TextView android:text="Label:" android:id="@+id/textView2" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
     <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:text="Label" android:id="@+id/labelEditText"></EditText>
     <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:layout_height="wrap_content">
-        <Button android:text="@string/saveButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/button2"></Button>
-        <Button android:text="@string/cancelButtonText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/cancelButton"></Button>
+        <Button android:text="@string/saveButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/saveButton" android:onClick="saveData"></Button>
+        <Button android:text="@string/cancelButtonText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/cancelButton" android:onClick="cancelAdd"></Button>
     </LinearLayout>
 </LinearLayout>

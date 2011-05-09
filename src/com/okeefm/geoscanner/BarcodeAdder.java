@@ -11,7 +11,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.text.format.Time;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -22,15 +26,19 @@ public class BarcodeAdder extends Activity{
 	private EditText dateText;
 	private EditText timeText;
 	private Location currentLocation;
+	private Location savedLocation;
 	private Boolean usingLastKnownLocation;
 	private LocationListener locationListener;
 	private LocationManager lm;
+	
+	private Button saveButton, cancelButton;
 	
 	private int mYear;
 	private int mMonth;
 	private int mDay;
 	private int mHour;
 	private int mMinute;
+	
 	private int index;
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 	private static final long GPS_UPDATE_TIME = 1000 * 60;
@@ -72,6 +80,18 @@ public class BarcodeAdder extends Activity{
         
         setCurrentTime();
         updateTimeDisplay();
+        
+        saveButton = (Button) findViewById(R.id.saveButton);
+        cancelButton = (Button) findViewById(R.id.cancelButton);
+        
+        Intent intent = this.getIntent();
+        
+        saveButton.setOnClickListener(new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				saveData();
+			}
+		});
         
         lm = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -254,8 +274,28 @@ public class BarcodeAdder extends Activity{
         startActivityForResult(intent, 0);
     }
     
+    public void saveData() {
+    	EditText editText = (EditText) findViewById(R.id.barcodeEditText);
+    	String barcodeString = editText.getText().toString();
+    	editText = (EditText) findViewById(R.id.labelEditText);
+    	String label = editText.getText().toString();
+    	Time gc = new Time();
+    	gc.set(0, mMinute, mHour, mMonth, mDay, mYear);
+    	Barcode barcode = new Barcode(barcodeString, savedLocation, gc, label);
+    	Intent intent = this.getIntent();
+    	intent.putExtra("NEW_BARCODE", barcode);
+    	this.setResult(RESULT_OK, intent);
+    	finish();
+    }
+    
+    public void cancelAdd() {
+    	this.setResult(RESULT_CANCELED);
+    	finish();
+    }
+    
     /** set the text in the "location" editText box */
     private void setLocationText() {
+    	savedLocation = currentLocation;
     	text = (EditText) findViewById(R.id.locationEditText);
     	text.setText(Location.convert(currentLocation.getLatitude(), Location.FORMAT_DEGREES) + " " + Location.convert(currentLocation.getLongitude(), Location.FORMAT_DEGREES));
     }
