@@ -10,18 +10,19 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.format.Time;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-public class BarcodeAdder extends Activity{
+public class BarcodeAdder extends Activity {
 	private EditText text;
 	private EditText dateText;
 	private EditText timeText;
@@ -30,6 +31,7 @@ public class BarcodeAdder extends Activity{
 	private Boolean usingLastKnownLocation;
 	private LocationListener locationListener;
 	private LocationManager lm;
+	private ScrollView sv;
 	
 	private Button saveButton, cancelButton;
 	
@@ -49,7 +51,9 @@ public class BarcodeAdder extends Activity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.add);
+		sv = new ScrollView(getApplicationContext());
+		sv.addView((LinearLayout) findViewById(R.id.mainLinearLayout));
+		setContentView(sv);
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -61,7 +65,6 @@ public class BarcodeAdder extends Activity{
         
         dateText.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v) {
-        		setCurrentDate();
         		showDialog(DATE_DIALOG_ID);
         		updateDateDisplay();
         	}
@@ -69,7 +72,6 @@ public class BarcodeAdder extends Activity{
         
         timeText.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v) {
-        		setCurrentTime();
         		showDialog(TIME_DIALOG_ID);
         		updateTimeDisplay();
         	}
@@ -93,24 +95,48 @@ public class BarcodeAdder extends Activity{
 			}
 		});
         
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				cancelAdd();
+				
+			}
+		});
+        
         lm = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
         	public void onLocationChanged(Location location) {
+        		Toast.makeText(getApplicationContext(), "location updated", Toast.LENGTH_SHORT);
         		updateCurrentLocation(location);
         	}
         	
-        	public void onStatusChanged(String provider, int status, Bundle extras) {}
+        	public void onStatusChanged(String provider, int status, Bundle extras) {
+        		String message;
+        		switch (status) {
+        			case LocationProvider.AVAILABLE: message = "Location now available"; break;
+        			case LocationProvider.TEMPORARILY_UNAVAILABLE: message = "Location temporarily unavailable"; break;
+        			case LocationProvider.OUT_OF_SERVICE: message = "Location unavailable"; break;
+        			default: message = "Location status changed"; break;
+        		}
+        		
+        		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        	}
         	
-        	public void onProviderEnabled(String provider) {}
+        	public void onProviderEnabled(String provider) {
+        		Toast.makeText(getApplicationContext(), "Location provider enabled:" + provider, Toast.LENGTH_SHORT);
+        	}
         	
         	public void onProviderDisabled(String provider) {
         		Toast.makeText(getApplicationContext(), "Please enable GPS for location to work", Toast.LENGTH_LONG).show();
         	}
         };
         
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_UPDATE_TIME, 0, locationListener);
-        currentLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, GPS_UPDATE_TIME, 0, locationListener);
+        currentLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        lm.removeUpdates(locationListener);
         usingLastKnownLocation = true;
+        
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_UPDATE_TIME, 0, locationListener);
 	}
 	
 	@Override
@@ -126,6 +152,7 @@ public class BarcodeAdder extends Activity{
     	super.onResume();
     	lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_UPDATE_TIME, 0, locationListener);
     	currentLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    	usingLastKnownLocation = true;
     }
 	
 	/** Determines whether one Location reading is better than the current Location fix
@@ -263,6 +290,7 @@ public class BarcodeAdder extends Activity{
     public void updateCurrentLocation(Location location) {
     	if (isBetterLocation(location, currentLocation)) {
     		currentLocation = location;
+    		setLocationText();
     		usingLastKnownLocation = false;
     	}
     }
@@ -295,9 +323,13 @@ public class BarcodeAdder extends Activity{
     
     /** set the text in the "location" editText box */
     private void setLocationText() {
+    	if (currentLocation == null) {
+    		Toast.makeText(getApplicationContext(), "No location found, please try again", Toast.LENGTH_SHORT).show();
+    		return;
+    	}
     	savedLocation = currentLocation;
     	text = (EditText) findViewById(R.id.locationEditText);
-    	text.setText(Location.convert(currentLocation.getLatitude(), Location.FORMAT_DEGREES) + " " + Location.convert(currentLocation.getLongitude(), Location.FORMAT_DEGREES));
+    	text.setText(Location.convert(savedLocation.getLatitude(), Location.FORMAT_DEGREES) + " " + Location.convert(savedLocation.getLongitude(), Location.FORMAT_DEGREES));
     }
     
     /** the intent return function from Barcode Scanner */
@@ -308,7 +340,6 @@ public class BarcodeAdder extends Activity{
                 String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
                 text = (EditText) findViewById(R.id.barcodeEditText);
                 text.setText(contents);
-                setLocationText();
             } else if (resultCode == RESULT_CANCELED) {
             	Toast.makeText(getApplicationContext(), "Barcode Scanner did not return a valid barcode", Toast.LENGTH_LONG).show();
             }

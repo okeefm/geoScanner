@@ -14,10 +14,10 @@ public class GeoScanner extends Activity {
     /** Called when the activity is first created. */
 	private Integer index;
 	
-	private static final String TAG = "geoScanner";
 	private static final int NEW_BARCODE_REQUEST = 1;
 	
 	private ArrayList<Barcode> barcodes;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +45,8 @@ public class GeoScanner extends Activity {
     	if (requestCode == NEW_BARCODE_REQUEST) {
     		if (resultCode == RESULT_OK) {
     			index++;
-    			
-    			barcodes.add(data.getExtras().getParcelable("NEW_BARCODE"));
+    			Barcode barcode = data.getExtras().getParcelable("NEW_BARCODE");
+    			barcodes.add(barcode);
     		}
     	}
     }
